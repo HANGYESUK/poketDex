@@ -2,12 +2,10 @@ import styled from "@emotion/styled";
 import PokeNameChip from "../common/PokeNameChip";
 import PokeMarkChip from "../common/PokeMarkChip";
 import {useQuery} from "react-query";
-import {pokemonDetailDataFetching, pokemonDetailDataParsedType} from "../Service/pokemonService";
-import {useEffect, useState} from "react";
-import pokeNameChip from "../common/PokeNameChip";
+import {pokemonDetailDataFetching} from "../Service/pokemonService";
+import {useMemo} from "react";
 import {useNavigate} from "react-router-dom";
-
-const imgSrc = "https://mblogthumb-phinf.pstatic.net/20160817_259/retspe_14714118890125sC2j_PNG/%C7%C7%C4%AB%C3%F2_%281%29.png?type=w800"
+import {PokemonImagesSkeleton} from "../common/PokemonImagesSkeleton";
 
 interface PokeCardProps {
     name: string;
@@ -16,24 +14,36 @@ interface PokeCardProps {
 
 const PokeCard = ({ name, url }: PokeCardProps) => {
 
-    const [pokemonDetail, setPokemonDetail] = useState<pokemonDetailDataParsedType>()
-
     const navigate = useNavigate()
 
-    useEffect(() => {
-         pokemonDetailDataFetching(name).then(response => {
-             setPokemonDetail(response)
-         })
+    const pokemonName = useMemo(() => name, [name])
 
 
-    }, [name]);
+     const { data: pokemonDetail, isLoading  } = useQuery(`pokemonDetail${pokemonName}`, () => pokemonDetailDataFetching(pokemonName))
 
-    return <Item onClick={() => navigate(`/pokemon/${name}`)}>
+    if(isLoading) {
+        return (
+            <Item color={'#fff'}>
+                <Header>
+                    <PokeNameChip name={'포켓몬'} color={'#ffca99'} id={0}/>
+                </Header>
+                <Body>
+                    <PokemonImagesSkeleton />
+                </Body>
+                <Footer>
+                    <PokeMarkChip/>
+                </Footer>
+            </Item>
+        )
+    }
+
+
+    return <Item color={'#fff'} onClick={() => navigate(`/pokemon/${name}`)}>
         <Header>
-            <PokeNameChip name={pokemonDetail?.name} id={pokemonDetail?.id}/>
+            <PokeNameChip name={pokemonDetail?.koreanName} color={pokemonDetail?.color} id={pokemonDetail?.id}/>
         </Header>
         <Body>
-            <Image src={pokemonDetail?.images.officialArtworkFront} alt={pokemonDetail?.name}/>
+            <Image src={pokemonDetail?.images.frontDefault} alt={pokemonDetail?.name}/>
         </Body>
         <Footer>
             <PokeMarkChip/>
