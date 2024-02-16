@@ -1,19 +1,62 @@
 import styled from "@emotion/styled";
 import PokeMarkChip from "../common/PokeMarkChip";
-import {useNavigate} from "react-router-dom";
-
-const imgSrc = "https://mblogthumb-phinf.pstatic.net/20160817_259/retspe_14714118890125sC2j_PNG/%C7%C7%C4%AB%C3%F2_%281%29.png?type=w800"
+import {useParams} from "react-router-dom";
+import {pokemonDetailDataFetching} from "../Service/pokemonService";
+import {useQuery} from "react-query";
+import {useEffect, useLayoutEffect} from "react";
 
 const PokemonDetail = () => {
-    let navigate = useNavigate()
+    const pokemonName  = useParams().name || 'pikachu'
 
-    const navigateHandler = () => {
 
-    }
+    const { data: pokemonDetail, isLoading  } = useQuery(`pokemonDetail${pokemonName}`, () => pokemonDetailDataFetching(pokemonName))
+
+    useEffect(() => {
+        const merge = (arr1?: number[], arr2?: number[]) => {
+            var result = []
+            let i = 0;
+            let j = 0;
+            if(arr1 && arr2) {
+                while(i < arr1.length && j < arr2.length) {
+
+                    if(arr2[j] > arr1[i]) {
+                        result.push(arr1[i])
+                        i++
+                    }
+                    else {
+                        result.push(arr2[j])
+                        j++
+                    }
+                }
+
+                while(i < arr1.length) {
+                    result.push(arr1[i])
+                    i++
+                }
+                while(j < arr2.length) {
+                    result.push(arr2[j])
+                    j++
+                }
+            }
+
+            return result
+
+        }
+
+        const  mergeSort = (arr: number[]): number[] => {
+            if(arr.length <= 1) return arr;
+            let mid = Math.floor(arr.length/2)
+            let arr1 = mergeSort(arr.slice(0, mid))
+            let arr2 = mergeSort(arr.slice(mid))
+            return merge(arr1, arr2)
+        }
+
+        mergeSort([10, 12, 11, 12])
+    }, []);
 
     return <Container>
         <ImageContainer>
-            <Image src={imgSrc} alt={"포켓몬 사진"}/>
+            <Image src={pokemonDetail?.images.frontDefault} alt={"포켓몬 사진"}/>
         </ImageContainer>
         <Divider/>
         <Body>
@@ -23,28 +66,42 @@ const PokemonDetail = () => {
                 <TableRow>
 
                     <TableHeader>번호</TableHeader>
-                    <td>001</td>
+                    <td>{pokemonDetail?.id}</td>
 
                 </TableRow>
                 <TableRow>
                     <TableHeader>이름</TableHeader>
-                    <td>이상해씨</td>
+                    <td>{`${pokemonDetail?.koreanName} (${pokemonDetail?.name})`}</td>
+                </TableRow>
+                <TableRow>
+                    <TableHeader>타입</TableHeader>
+                    <td>{pokemonDetail?.types.toString()}</td>
+                </TableRow>
+                <TableRow>
+                    <TableHeader>키</TableHeader>
+                    <td>{`${pokemonDetail?.height} M`}</td>
+                </TableRow>
+                <TableRow>
+                    <TableHeader>몸무게</TableHeader>
+                    <td>{`${pokemonDetail?.weight} Kg`}</td>
                 </TableRow>
                 </tbody>
             </Table>
             <h2>능력치</h2>
             <Table>
                 <tbody>
-                <TableRow>
 
-                    <TableHeader>HP</TableHeader>
-                    <td>45</td>
+                {
+                    pokemonDetail?.baseStats.map(item => {
+                        return  <TableRow key={item.name}>
 
-                </TableRow>
-                <TableRow>
-                    <TableHeader>Attack</TableHeader>
-                    <td>49</td>
-                </TableRow>
+                            <TableHeader>{item.name}</TableHeader>
+                            <td>{item.value}</td>
+
+                        </TableRow>
+                    })
+                }
+
                 </tbody>
             </Table>
         </Body>
