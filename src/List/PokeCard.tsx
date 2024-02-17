@@ -38,7 +38,10 @@ const PokeCard = ({ name, url }: PokeCardProps) => {
     }
 
 
-    return <Item color={'#fff'} onClick={() => navigate(`/pokemon/${name}`)}>
+    return <Item color={'#fff'} onClick={() => {
+        sessionStorage.setItem("scrollValue", window.pageYOffset.toString())
+        navigate(`/pokemon/${name}`)
+    }}>
         <Header>
             <PokeNameChip name={pokemonDetail?.koreanName} color={pokemonDetail?.color} id={pokemonDetail?.id}/>
         </Header>

@@ -4,8 +4,9 @@ import {useCallback} from "react";
 interface PokeNameChipProps {
     name?: string;
     id?: number;
+    color?: string
 }
-const PokeNameChip = ({ name, id }: PokeNameChipProps) => {
+const PokeNameChip = ({ name, id, color }: PokeNameChipProps) => {
 
     const renderId = useCallback((id?: number) => {
         const digits = 3;
@@ -25,7 +26,7 @@ const PokeNameChip = ({ name, id }: PokeNameChipProps) => {
 
     }, [id])
 
-    return <Chip>
+    return <Chip color={color}>
         <NumberChip>
             <NumberText>{renderId(id)}</NumberText>
         </NumberChip>
