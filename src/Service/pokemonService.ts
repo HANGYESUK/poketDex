@@ -21,6 +21,8 @@ export interface pokemonDetailDataTye {
     }[];
     sprites: {
         front_default: string,
+        back_default: string,
+
         other: {
             dream_world: {
                 front_default: string;
@@ -40,16 +42,31 @@ export interface pokemonDetailDataTye {
     }[]
 }
 
+export interface pokemonSpeciesDataType {
+    color: {
+        name: string
+    },
+    names: {
+        name: string,
+        language: {
+            name: string
+        }
+    }[]
+}
+
 export interface pokemonDetailDataParsedType {
     id: number;
     weight: number;
     height: number;
     name: string;
+    koreanName: string;
+    color: string;
     types: string[];
     images: {
         frontDefault: string;
         dreamWorldFront: string;
         officialArtworkFront: string;
+        backDefault?: string;
     },
     baseStats: {
         name: string;
@@ -57,16 +74,26 @@ export interface pokemonDetailDataParsedType {
     }[]
 }
 
-export const pokemonListDataFetching = async () => {
-    const data: pokemonListDataType = await fetch("https://pokeapi.co/api/v2/pokemon/").then((response) => response.json());
+export const pokemonListDataFetching = async (nextPage: string) => {
+    const data: pokemonListDataType = await fetch(nextPage ? nextPage : `https://pokeapi.co/api/v2/pokemon`).then((response) => response.json());
     return data
 }
 
-export const pokemonDetailDataFetching = async (name: string): Promise<pokemonDetailDataParsedType> => {
-    const detail: pokemonDetailDataTye  = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`).then((response) => response.json());
-    return {
+export const pokemonDetailDataFetching = async (name: string) => {
+
+    const pokemonDetailUrl = `https://pokeapi.co/api/v2/pokemon/${name}`
+    const pokemonSpeciesUrl = `https://pokeapi.co/api/v2/pokemon-species/${name}`
+
+    const detail: pokemonDetailDataTye  = await fetch(pokemonDetailUrl).then((response) => response.json());
+    const species: pokemonSpeciesDataType  = await fetch(pokemonSpeciesUrl).then((response) => response.json());
+
+    const koreanName = species.names.find(item => item.language.name === 'ko')?.name || detail.name
+
+    const resultData: pokemonDetailDataParsedType = {
         id: detail.id,
         name: detail.name,
+        koreanName: koreanName,
+        color: species.color.name,
         height: detail.height / 10, //미터 단위
         weight: detail.weight / 10, //kg 단위
         types: detail.types.map(item => item.type.name),
@@ -74,6 +101,7 @@ export const pokemonDetailDataFetching = async (name: string): Promise<pokemonDe
             frontDefault: detail.sprites.front_default,
             dreamWorldFront: detail.sprites.other.dream_world.front_default,
             officialArtworkFront: detail.sprites.other['official-artwork'].front_default,
+            backDefault: detail.sprites.back_default,
         },
         baseStats: detail.stats.map(item => {
             return {
@@ -82,5 +110,7 @@ export const pokemonDetailDataFetching = async (name: string): Promise<pokemonDe
             }
         })
     }
+
+    return resultData
 }
 
