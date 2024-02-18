@@ -1,8 +1,8 @@
 import styled from "@emotion/styled";
 import PokeCard from "./PokeCard";
-import {useQuery} from "react-query";
-import { pokemonListDataFetching, pokemonListDataType} from "../Service/pokemonService";
-import {useEffect, useState} from "react";
+import {useInfiniteQuery} from "react-query";
+import {useEffect, useRef, useState} from "react";
+import {pokemonListDataFetching, pokemonListDataType} from "../Service/pokemonService";
 
 const PokeCardList = () => {
     const [pokemonList, setPokemonList] = useState<pokemonListDataType>({
@@ -11,20 +11,63 @@ const PokeCardList = () => {
         results: []
     })
 
-    const { data, isSuccess } = useQuery('pokemonListData', pokemonListDataFetching)
+    const listBottomRef = useRef<HTMLDivElement>(null)
+
+
+        const { data, fetchNextPage, isFetchingNextPage, hasNextPage, isFetching, isError } = useInfiniteQuery(
+            'pokemonList',
+            ({ pageParam }) => pokemonListDataFetching(pageParam),
+            {
+                getNextPageParam: (lastPage, allPages) => {
+                    const nextPageUrl = lastPage.next;
+                    return nextPageUrl;
+                },
+            }
+        );
+
+
+    const intersectionHandler: IntersectionObserverCallback = async (entries) => {
+        const [entry] = entries;
+        if (entry.isIntersecting && !isFetchingNextPage && hasNextPage) {
+            await fetchNextPage();
+        }
+    };
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(intersectionHandler);
+        if (listBottomRef.current) {
+            observer.observe(listBottomRef.current);
+        }
+
+        return () => observer.disconnect();
+    }, [listBottomRef, hasNextPage]);
 
     useEffect(() => {
         if(data) {
-            setPokemonList(data)
+            const isFirstPage = data.pages.length === 1
+            setPokemonList({
+                ...data.pages[isFirstPage ? 0 : data.pages.length -1],
+                results: data.pages.map(item => {
+                    return item.results
+                }).flat(2)
+            })
         }
-    }, [isSuccess])
+    }, [isFetching])
 
-    return <List>
+    useEffect(() => {
+        if(sessionStorage.getItem('scrollValue')) {
+            console.log(window.innerHeight)
+            window.scrollTo(0, Number(sessionStorage.getItem('scrollValue')))
+        }
+    }, []);
+
+    return <List id={'pokemonList'}>
         {
             pokemonList.results.map((item, index) => {
                 return <PokeCard {...item} key={`${index}`}/>
             })
         }
+        <div ref={listBottomRef} />
     </List>
 }
 
