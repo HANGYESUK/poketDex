@@ -3,21 +3,19 @@ import PokeNameChip from "../common/PokeNameChip";
 import PokeMarkChip from "../common/PokeMarkChip";
 import {useQuery} from "react-query";
 import {pokemonDetailDataFetching} from "../Service/pokemonService";
-import {useMemo} from "react";
+import {useMemo, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {PokemonImagesSkeleton} from "../common/PokemonImagesSkeleton";
 
 interface PokeCardProps {
     name: string;
     url: string;
+    onClickPokemon: () => void;
 }
 
-const PokeCard = ({ name, url }: PokeCardProps) => {
-
-    const navigate = useNavigate()
+const PokeCard = ({ name, url, onClickPokemon }: PokeCardProps) => {
 
     const pokemonName = useMemo(() => name, [name])
-
 
      const { data: pokemonDetail, isLoading  } = useQuery(`pokemonDetail${pokemonName}`, () => pokemonDetailDataFetching(pokemonName))
 
@@ -37,10 +35,9 @@ const PokeCard = ({ name, url }: PokeCardProps) => {
         )
     }
 
-
     return <Item color={'#fff'} onClick={() => {
+        onClickPokemon()
         sessionStorage.setItem("scrollValue", window.pageYOffset.toString())
-        navigate(`/pokemon/${name}`)
     }}>
         <Header>
             <PokeNameChip name={pokemonDetail?.koreanName} color={pokemonDetail?.color} id={pokemonDetail?.id}/>

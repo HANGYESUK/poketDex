@@ -1,13 +1,15 @@
 import styled from "@emotion/styled";
 import PokeMarkChip from "../common/PokeMarkChip";
-import {useParams} from "react-router-dom";
 import {pokemonDetailDataFetching} from "../Service/pokemonService";
 import {useQuery} from "react-query";
-import {useEffect, useLayoutEffect} from "react";
+import {useEffect} from "react";
 
-const PokemonDetail = () => {
-    const pokemonName  = useParams().name || 'pikachu'
+interface PokemonDetailModalProps {
+    pokemonName: string
+    onClose: () => void;
+}
 
+const PokemonDetailModal = ({ pokemonName, onClose }: PokemonDetailModalProps) => {
 
     const { data: pokemonDetail, isLoading  } = useQuery(`pokemonDetail${pokemonName}`, () => pokemonDetailDataFetching(pokemonName))
 
@@ -116,6 +118,21 @@ const Container = styled.section`
   margin: 16px 32px;
   border-radius: 16px;
   box-shadow: 1px 1px 1px 1px #c0c0c0;
+  width: 500px;
+  height: 660px;
+  position: fixed;
+  background: white;
+  z-index: 999;
+  overflow: scroll;
+  @media screen and (max-width: 550px) {
+    width: 80%;
+    height: 66%;
+    bottom: 100px;
+  }
+  @media screen and (min-width: 1000px) {
+    right: 20px;
+    bottom: 120px;
+  }
 `
 
 const ImageContainer = styled.section`
@@ -172,4 +189,4 @@ const Footer = styled.section`
   margin: 32px 16px;
 `
 
-export default PokemonDetail
+export default PokemonDetailModal

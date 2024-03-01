@@ -3,6 +3,8 @@ import PokeCard from "./PokeCard";
 import {useInfiniteQuery} from "react-query";
 import {useEffect, useRef, useState} from "react";
 import {pokemonListDataFetching, pokemonListDataType} from "../Service/pokemonService";
+import PokemonDetailModal from "../Detail/PokemonDetailModal";
+import PokemonModalBtn from "../Detail/PokemonModalBtn";
 
 const PokeCardList = () => {
     const [pokemonList, setPokemonList] = useState<pokemonListDataType>({
@@ -10,6 +12,10 @@ const PokeCardList = () => {
         next: '',
         results: []
     })
+
+    const [isModalVisible, setIsModalVisible] = useState<boolean>(false)
+
+    const [selectPokemon, setSelectPokemon] = useState<string>('')
 
     const listBottomRef = useRef<HTMLDivElement>(null)
 
@@ -54,17 +60,17 @@ const PokeCardList = () => {
         }
     }, [isFetching])
 
-    useEffect(() => {
-        if(sessionStorage.getItem('scrollValue')) {
-            console.log(window.innerHeight)
-            window.scrollTo(0, Number(sessionStorage.getItem('scrollValue')))
-        }
-    }, []);
-
     return <List id={'pokemonList'}>
+        <PokemonModalBtn onOpenModal={() => {
+            if(selectPokemon) setIsModalVisible(prevState => !prevState)
+        }}/>
+        {isModalVisible && <PokemonDetailModal pokemonName={selectPokemon} onClose={() => setIsModalVisible(prevState => !prevState)}/>}
         {
             pokemonList.results.map((item, index) => {
-                return <PokeCard {...item} key={`${index}`}/>
+                return <PokeCard {...item} key={`${index}`} onClickPokemon={() => {
+                    setSelectPokemon(item.name)
+                    setIsModalVisible(prevState => !prevState)
+                }}/>
             })
         }
         <div ref={listBottomRef} />
