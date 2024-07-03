@@ -48,7 +48,7 @@ const PokeCardList = () => {
         }
 
         return () => observer.disconnect();
-    }, [ listBottomRef, hasNextPage ]);
+    }, [ fetchNextPage, isFetchingNextPage, listBottomRef, hasNextPage ]);
 
     useEffect(() => {
         if(data) {
