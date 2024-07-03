@@ -11,7 +11,7 @@ interface PokemonDetailModalProps {
 
 const PokemonDetailModal = ({ pokemonName, onClose }: PokemonDetailModalProps) => {
 
-    const { data: pokemonDetail, isLoading  } = useQuery(`pokemonDetail${pokemonName}`, () => pokemonDetailDataFetching(pokemonName))
+    const { data: pokemonDetail  } = useQuery(`pokemonDetail${pokemonName}`, () => pokemonDetailDataFetching(pokemonName))
 
     useEffect(() => {
         const merge = (arr1?: number[], arr2?: number[]) => {

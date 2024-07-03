@@ -22,7 +22,7 @@ const PokeCardList = () => {
     const listBottomRef = useRef<HTMLDivElement>(null)
 
 
-        const { data, fetchNextPage, isFetchingNextPage, hasNextPage, isFetching, isError } = useInfiniteQuery(
+        const { data, fetchNextPage, isFetchingNextPage, hasNextPage, isFetching } = useInfiniteQuery(
             'pokemonList',
             ({ pageParam }) => pokemonListDataFetching(pageParam),
             {
@@ -48,7 +48,7 @@ const PokeCardList = () => {
         }
 
         return () => observer.disconnect();
-    }, [listBottomRef, hasNextPage]);
+    }, [ intersectionHandler, listBottomRef, hasNextPage ]);
 
     useEffect(() => {
         if(data) {
@@ -60,7 +60,7 @@ const PokeCardList = () => {
                 }).flat(2)
             })
         }
-    }, [isFetching])
+    }, [data, isFetching])
 
     return <List id={'pokemonList'}>
         <PokemonModalBtn onOpenModal={() => {

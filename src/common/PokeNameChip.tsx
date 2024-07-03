@@ -1,5 +1,4 @@
 import styled from "@emotion/styled";
-import {useCallback} from "react";
 
 interface PokeNameChipProps {
     name?: string;
@@ -8,7 +7,7 @@ interface PokeNameChipProps {
 }
 const PokeNameChip = ({ name, id, color }: PokeNameChipProps) => {
 
-    const renderId = useCallback((id?: number) => {
+    const renderId = (id?: number) => {
         const digits = 3;
         const numberString = id?.toString() || '1'
 
@@ -24,7 +23,7 @@ const PokeNameChip = ({ name, id, color }: PokeNameChipProps) => {
 
         return `${result}${numberString}`
 
-    }, [id])
+    }
 
     return <Chip color={color}>
         <NumberChip>

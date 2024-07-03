@@ -1,5 +1,3 @@
-import {types} from "util";
-
 export interface pokemonListDataType {
     count: number;
     next : string;

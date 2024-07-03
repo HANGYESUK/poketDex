@@ -3,8 +3,7 @@ import PokeNameChip from "../common/PokeNameChip";
 import PokeMarkChip from "../common/PokeMarkChip";
 import {useQuery} from "react-query";
 import {pokemonDetailDataFetching} from "../Service/pokemonService";
-import {useMemo, useState} from "react";
-import {useNavigate} from "react-router-dom";
+import {useMemo} from "react";
 import {PokemonImagesSkeleton} from "../common/PokemonImagesSkeleton";
 
 interface PokeCardProps {
