@@ -11,9 +11,10 @@ interface PokeCardProps {
     name: string;
     url: string;
     onClickPokemon: () => void;
+    'data-cy'?: string;
 }
 
-const PokeCard = ({ name, url, onClickPokemon }: PokeCardProps) => {
+const PokeCard = ({ name, url, onClickPokemon, 'data-cy': dataCy, }: PokeCardProps) => {
 
     const pokemonName = useMemo(() => name, [name])
 
@@ -35,7 +36,7 @@ const PokeCard = ({ name, url, onClickPokemon }: PokeCardProps) => {
         )
     }
 
-    return <Item color={'#fff'} onClick={() => {
+    return <Item color={'#fff'} data-cy={dataCy} onClick={() => {
         onClickPokemon()
         sessionStorage.setItem("scrollValue", window.pageYOffset.toString())
     }}>

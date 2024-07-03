@@ -75,14 +75,14 @@ export interface pokemonDetailDataParsedType {
 }
 
 export const pokemonListDataFetching = async (nextPage: string) => {
-    const data: pokemonListDataType = await fetch(nextPage ? nextPage : `https://pokeapi.co/api/v2/pokemon`).then((response) => response.json());
+    const data: pokemonListDataType = await fetch(nextPage ? nextPage : process.env.REACT_APP_POKEMON_API_HOST || '').then((response) => response.json());
     return data
 }
 
 export const pokemonDetailDataFetching = async (name: string) => {
 
-    const pokemonDetailUrl = `https://pokeapi.co/api/v2/pokemon/${name}`
-    const pokemonSpeciesUrl = `https://pokeapi.co/api/v2/pokemon-species/${name}`
+    const pokemonDetailUrl = `${process.env.REACT_APP_POKEMON_API_HOST}/${name}`
+    const pokemonSpeciesUrl = `${process.env.REACT_APP_POKEMON_SPEC_API_HOST }/${name}`
 
     const detail: pokemonDetailDataTye  = await fetch(pokemonDetailUrl).then((response) => response.json());
     const species: pokemonSpeciesDataType  = await fetch(pokemonSpeciesUrl).then((response) => response.json());
