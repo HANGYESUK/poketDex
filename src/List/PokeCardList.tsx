@@ -13,6 +13,8 @@ const PokeCardList = () => {
         results: []
     })
 
+    console.log('배포 자동화 성공!!')
+
     const [isModalVisible, setIsModalVisible] = useState<boolean>(false)
 
     const [selectPokemon, setSelectPokemon] = useState<string>('')
