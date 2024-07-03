@@ -34,21 +34,21 @@ const PokeCardList = () => {
         );
 
 
-    const intersectionHandler: IntersectionObserverCallback = async (entries) => {
-        const [entry] = entries;
-        if (entry.isIntersecting && !isFetchingNextPage && hasNextPage) {
-            await fetchNextPage();
-        }
-    };
-
     useEffect(() => {
+        const intersectionHandler: IntersectionObserverCallback = async (entries) => {
+            const [entry] = entries;
+            if (entry.isIntersecting && !isFetchingNextPage && hasNextPage) {
+                await fetchNextPage();
+            }
+        };
+
         const observer = new IntersectionObserver(intersectionHandler);
         if (listBottomRef.current) {
             observer.observe(listBottomRef.current);
         }
 
         return () => observer.disconnect();
-    }, [ intersectionHandler, listBottomRef, hasNextPage ]);
+    }, [ listBottomRef, hasNextPage ]);
 
     useEffect(() => {
         if(data) {
